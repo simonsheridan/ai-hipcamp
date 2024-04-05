@@ -1,10 +1,10 @@
 {
   "name": "ai-hipcamp",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "description": "A sample NestJS application that scrapes Hipcamp for campsite data and provides OpenAI powered responses",
+  "author": "Simon Sheridan",
+  "private": false,
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

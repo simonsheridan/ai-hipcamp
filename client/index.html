@@ -1,0 +1,206 @@
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h1 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  p {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  aside {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    border-left: 3px solid #3cd9eb;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    color: #444;
+  }
+  
+  ul {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 10px;
+    list-style-type: disc;
+    padding-left: 20px;
+  }
+
+  input[type='text'] {
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  #content {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  a {
+    color: #ba5226;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    height: 100vh;
+  }
+
+  .instructions {
+    width: 800px;
+    padding: 20px;
+    background-color: #f8f8f8;
+  }
+
+  .output {
+    flex: 1;
+    padding: 20px;
+    min-width: 400px;
+  }
+
+  .spinner-border {
+    display: inline-block;
+    width: 1.5rem; /* Updated size: 1.5rem */
+    height: 1.5rem; /* Updated size: 1.5rem */
+    vertical-align: text-bottom;
+    border: 0.25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+  }
+
+  .spinner-border-sm {
+    width: 0.75rem; /* Updated size: 0.75rem */
+    height: 0.75rem; /* Updated size: 0.75rem */
+    border-width: 0.2em;
+  }
+
+  @keyframes spinner-border {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .container {
+      flex-direction: column; /* Stack items vertically */
+      padding-right: 20px;
+      margin-right: 20px;
+    }
+
+    .instructions {
+      width: 100%; /* Set instructions width to full width */
+      padding-right: 20px;
+    }
+
+    .output {
+      width: 100%; /* Set sidebar width to full width */
+    }
+  }
+
+</style>
+
+<div class="container">
+  <div class="instructions">
+    <h1>Hipcamp AI search</h1>
+    <p>
+      Describe (in plain English) your ideal <a href="https://hipcamp.com" target="_blank">Hipcamp.com</a> stay
+      <aside>The more information you supply, the better the AI can do its job to find you the perfect match</aside>
+    </p>
+    <p>
+      Add the following info minimally and have fun trying anything else you find
+      relevant!
+    </p>
+    <ul>
+      <li>Location (City and State to be near for best results)</li>
+      <li>Number of guests</li>
+      <li>Any amenities you want</li>
+    </ul>
+    <p>
+      For example
+      <aside>"I want to go camping near Bailey, Colorado with 4
+      friends, we want a fire pit and a lake to swim in"
+      </aside>
+      <aside>"I want to go glamping near San Francisco, California with my
+      partner, we want a hot tub and a king size bed"</aside>
+    </p>
+  </div>
+  
+  <div class="output">
+    <input id="search" type="text" placeholder="Describe your ideal hipcamp stay" />
+    <button id="submitBtn">Submit</button>
+    <br />
+    <div id="content"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  function addToOutput(text) {
+    document.getElementById('content').innerHTML += marked.parse(text);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', function () {
+    var input = document.getElementById('search').value;
+    if (!input || input.length < 20) {
+      addToOutput('Please enter some more information to get started!');
+      return;
+    }
+    addToOutput(input);
+
+    var submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submit';
+    submitBtn.disabled = true;
+
+    fetch('/api/', {
+      method: 'POST',
+      body: JSON.stringify({ input: input }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(function (response) {
+        return response.text();
+      })
+      .then(function (data) {
+        addToOutput(data);
+      })
+      .catch(function (error) {
+        console.error('Error:', error);
+      })
+      .finally(function () {
+        submitBtn.innerHTML = 'Submit';
+        submitBtn.disabled = false;
+      });
+  });
+</script>

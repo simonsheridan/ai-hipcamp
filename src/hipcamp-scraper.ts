@@ -16,15 +16,15 @@ async function scrapeHipcamp(url) {
     // Load the HTML content into Cheerio
     const $ = cheerio.load(html);
 
-    let properties = [];
+    const properties = [];
 
     // Extract the top 12 places to camp in the city, state passed into the URL
     $('div[data-cy="privateLandsModule"]')
       .contents()
       .map((i, el) => {
-        let property = [];
+        const property = [];
         // First get the link to the property
-        let link = ROOT_URL + $(el).attr('href');
+        const link = ROOT_URL + $(el).attr('href');
         property.push(link);
         // Iterate through the nodes containing the data we need
         $(el)
@@ -95,7 +95,7 @@ async function savePropertiesToDatabase(properties, city, state) {
 async function hipcampScraper(city, state) {
   try {
     const hipcampUrl = `https://www.hipcamp.com/en-US/d/united-states/${state}/${city}/camping/all`;
-    let properties = await scrapeHipcamp(hipcampUrl);
+    const properties = await scrapeHipcamp(hipcampUrl);
     await savePropertiesToDatabase(properties, city, state);
     return true;
   } catch (error) {
